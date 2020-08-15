@@ -14,14 +14,8 @@ namespace API.Controllers
     [Route("[controller]")]
     public class ValueController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
 
         private readonly ILogger<ValueController> _logger;
-
-
         public DataContext _dbContext { get; }
 
         public ValueController(ILogger<ValueController> logger, DataContext dbContext)

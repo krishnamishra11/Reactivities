@@ -1,0 +1,39 @@
+{
+	"MQueryList": {
+		"prefix": "MQueryList",
+		"body": [
+		  "using System.Collections.Generic;",
+		  "using System.Threading;",
+		  "using System.Threading.Tasks;",
+		  "using Domain;",
+		  "using MediatR;",
+		  "using Microsoft.EntityFrameworkCore;",
+		  "using Percistent;",
+		  "",
+		  "namespace Application.${2:example}",
+		  "{",
+		  "    public class List",
+		  "    {",
+		  "        public class Query : IRequest<List<${1:example}>> { }",
+		  "",
+		  "        public class Handler : IRequestHandler<Query, List<${1:example}>>",
+		  "        {",
+		  "            public DataContext _dataContext { get; }",
+		  "            public Handler(DataContext dataContext)",
+		  "            {",
+		  "                _dataContext = dataContext;",
+		  "",
+		  "            }",
+		  "",
+		  "            public async Task<List<${1:example}>> Handle(Query request, CancellationToken cancellationToken)",
+		  "            {",
+		  "                return await  _dataContext.${2:example}.ToListAsync();",
+		  "                 ",
+		  "            }",
+		  "        }",
+		  "    }",
+		  "}"
+		],
+		"description": "MQueryList"
+	  }
+}

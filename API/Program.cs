@@ -22,6 +22,7 @@ namespace API
                 var services=scope.ServiceProvider;
                 var context=services.GetRequiredService<DataContext>();
                 context.Database.Migrate();      
+                Seed.SeedData(context);
             }
             host.Run();
 
