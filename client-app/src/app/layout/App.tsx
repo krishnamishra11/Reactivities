@@ -16,7 +16,7 @@ const App =()=> {
   const [editMode,setEditMode]=useState(false);
 
   const [loding,setLoading]=useState(true);
-
+  const [submitting,setSubmitting]=useState(false);
 
   const handleSelectActivity=(id:string)=>{
     setselectedactivity(activities.filter(a=>a.id==id)[0])
@@ -24,21 +24,24 @@ const App =()=> {
   }
 
   const handleCreateActivity=(activity:IActivity)=>{
+    setSubmitting(true);
     agent.Activities.create(activity).then(()=>{
     setactivities([...activities,activity]);
     setselectedactivity(activity);
-    setEditMode(false);})
+    setEditMode(false);}).then(()=>setSubmitting(false))
   }
   const handleEditActivity=(activity:IActivity)=>{
+    setSubmitting(true);
     agent.Activities.update(activity).then(()=>{
     setactivities([...activities.filter(q=>q.id!=activity.id),activity]);
     setselectedactivity(activity);
-    setEditMode(false);});
+    setEditMode(false);}).then(()=>setSubmitting(false));
   }
   const handleDeleteActivity=(id:string)=>{
+    setSubmitting(true);
     agent.Activities.delete(id).then(()=>{
     setactivities([...activities.filter(q=>q.id!=id)]);
-    });
+    }).then(()=>setSubmitting(false));
   }
   
   const handleOpenCreateForm=(id:string)=>{
@@ -57,7 +60,7 @@ const App =()=> {
             activitivities.push(activity);
           });
             setactivities(activitivities) 
-        }).then(()=>setLoading) }, []);
+        }).then(()=>setLoading(false)) }, []);
 
         if(loding)
           return <LodingComponent content='loding activities'></LodingComponent>
@@ -75,6 +78,7 @@ const App =()=> {
                             createActivity={handleCreateActivity}
                             editActivity={handleEditActivity}
                             deleteActivity={handleDeleteActivity}
+                            submitting={submitting}
         ></ActivityDashboard>
       </Container>
       </Fragment>

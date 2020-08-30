@@ -6,8 +6,9 @@ interface IProp{
     activities:IActivity[];
     selectActivity:(id:string)=>void;
     deleteActivity:(id:string)=>void;
+    submitting:boolean;
 }
-const ActivityList:React.FC<IProp> = ({activities,selectActivity,deleteActivity}) => {
+const ActivityList:React.FC<IProp> = ({activities,selectActivity,deleteActivity,submitting}) => {
     return (
         <Segment clearing>
         <Item.Group>
@@ -21,8 +22,8 @@ const ActivityList:React.FC<IProp> = ({activities,selectActivity,deleteActivity}
               <div>{val.venue},{val.city}</div>
             </Item.Description>
             <Item.Extra>
-                <Button onClick={()=>selectActivity(val.id) } floated="right" content="View" color="blue" ></Button>
-                <Button onClick={()=>deleteActivity(val.id) } floated="right" content="Delete" color="red" ></Button>
+                <Button  onClick={()=>selectActivity(val.id) } floated="right" content="View" color="blue" ></Button>
+                <Button loading={submitting} onClick={()=>deleteActivity(val.id) } floated="right" content="Delete" color="red" ></Button>
                 <Label basic content="Category"/>
             </Item.Extra>
           </Item.Content>
