@@ -1,31 +1,26 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { Card,Icon,Image,ButtonGroup,Button } from 'semantic-ui-react'
-import { IActivity } from '../../model/IActivity'
+import React, { useContext } from 'react'
+import { Card,Image,ButtonGroup,Button } from 'semantic-ui-react'
+import ActivityStore from '../../app/store/activityStore'
+import {observer} from 'mobx-react-lite'
 
-interface IProp{
-    selectedActivity:IActivity;
-    setEditMode:(editMode:boolean)=>void;
-    setselectedactivity:(activity:IActivity|null)=>void;
-}
-
-const ActivityDetails:React.FC<IProp> = ({selectedActivity,setEditMode,setselectedactivity}) => {
+const ActivityDetails:React.FC = () => {
+  const{selectedActivity,openEditForm,cancleSelectedActivity}=useContext(ActivityStore);
     return (
         <Card fluid>
-        <Image src={`/assetes/categoryImages/${selectedActivity.category}.jpg`} wrapped ui={false} />
+        <Image src={`/assetes/categoryImages/${selectedActivity!.category}.jpg`} wrapped ui={false} />
         <Card.Content>
-          <Card.Header>{selectedActivity.title}</Card.Header>
+          <Card.Header>{selectedActivity!.title}</Card.Header>
           <Card.Meta>
-            <span className='date'>{selectedActivity.date}</span>
+            <span className='date'>{selectedActivity!.date}</span>
           </Card.Meta>
           <Card.Description>
-            {selectedActivity.description}
+            {selectedActivity!.description}
           </Card.Description>
         </Card.Content>
         <Card.Content extra>
           <ButtonGroup widths={2} >
-                 <Button onClick={()=>setEditMode(true)}   content="Edit" color="blue"></Button> 
-                 <Button onClick={()=>setselectedactivity(null)}  content="Cancel" color="grey" ></Button> 
+                 <Button onClick={()=>openEditForm(selectedActivity!.id)}   content="Edit" color="blue"></Button> 
+                 <Button onClick={()=>cancleSelectedActivity()}  content="Cancel" color="grey" ></Button> 
           </ButtonGroup>
         </Card.Content>
       </Card>
@@ -36,4 +31,4 @@ ActivityDetails.propTypes = {
 
 }
 
-export default ActivityDetails
+export default observer(ActivityDetails)

@@ -1,21 +1,16 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react'
+import React, { useState, ChangeEvent, FormEvent, useContext } from 'react'
 import { Segment,Form, Button } from 'semantic-ui-react'
 import { IActivity } from '../../model/IActivity'
 import {v4 as uuid} from 'uuid'
-interface IProps{
-    setEditMode:(editMode:boolean)=>void;
-    activity:IActivity;
-    createActivity:(activity:IActivity)=>void;
-    editActivity:(activity:IActivity)=>void;
-    submitting:boolean;
-}
+import ActivityStore from '../../app/store/activityStore'
+import {observer} from 'mobx-react-lite'
 
-const ActivityForm:React.FC<IProps> = ({setEditMode,activity:InsitalActivity,createActivity,editActivity,submitting}) => {
-
+const ActivityForm:React.FC = () => {
+   const {selectedActivity, createActivity,CancleFormOpen,editActivity,submmiting}=useContext(ActivityStore)
     const initialForm=()=>{
 
-        if(InsitalActivity){
-            return InsitalActivity;
+        if(selectedActivity){
+            return selectedActivity;
         } else{
             return { 
                 id:'',
@@ -57,8 +52,8 @@ const ActivityForm:React.FC<IProps> = ({setEditMode,activity:InsitalActivity,cre
              <Form.Input type="datetime-local" placeholder="Date" name='date' onChange={onChanageEvent} value={activity.date} ></Form.Input>
              <Form.Input placeholder="City" name='city' onChange={onChanageEvent} value={activity.city} ></Form.Input>
              <Form.Input placeholder="Venue" name='venue' onChange={onChanageEvent} value={activity.venue} ></Form.Input>
-             <Button loading={submitting} content='Submit' type='submit' name='' onChange={onChanageEvent} positive floated='right'  ></Button>
-             <Button loading={submitting} onClick={()=>setEditMode(false)} name='' onChange={onChanageEvent} content='Cancel' type='submit'  floated='right'  ></Button>
+             <Button loading={submmiting} content='Submit' type='submit' name='' onChange={onChanageEvent} positive floated='right'  ></Button>
+             <Button onClick={()=>CancleFormOpen()} name='' onChange={onChanageEvent} content='Cancel' type='submit'  floated='right'  ></Button>
          </Form>
 
     </Segment>
@@ -67,4 +62,4 @@ const ActivityForm:React.FC<IProps> = ({setEditMode,activity:InsitalActivity,cre
 
 
 
-export default ActivityForm
+export default observer(ActivityForm)
