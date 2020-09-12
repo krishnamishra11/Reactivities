@@ -1,8 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
 import {IActivity} from '../../model/IActivity';
-import { url } from 'inspector';
-import { List } from 'semantic-ui-react';
-import { resolve } from 'dns';
 axios.defaults.baseURL='http://localhost:5000/';
 const responceBody=(responce:AxiosResponse) => responce.data;
 const sleep=(ms:number)=> (responce:AxiosResponse)=>new Promise<AxiosResponse>(resolve=>setTimeout(()=>resolve(responce),ms));

@@ -7,10 +7,8 @@ configure({enforceActions:'always'} )
 
 class ActivityStore{
     @observable activityRegistry=new Map();
-    //@observable activities:IActivity[]=[];
-    @observable selectedActivity:IActivity| undefined=undefined;
+    @observable activity:IActivity| null=null;
     @observable lodingInitials =false;
-    @observable editMode=false;
     @observable submmiting=false;
     @observable target='';
 
@@ -28,13 +26,15 @@ class ActivityStore{
         activity.date=activity.date.split('.')[0];
         this.activityRegistry.set(activity.id,activity);
       });
-    });
       this.lodingInitials=false;   
+    });
+     
   }catch(error){
     runInAction('loging error',()=>{
       this.lodingInitials=false;   
+      console.log(error);
     })
-    console.log(error);
+    
   }
 
     }
@@ -46,10 +46,9 @@ class ActivityStore{
       runInAction('create action',()=>
       {
       this.activityRegistry.set(activity.id, activity);
-      this.selectedActivity=activity;
+      this.activity=activity;
       })
 
-      this.editMode=false;
       this.submmiting=false;
       }catch(error)
       {
@@ -70,9 +69,8 @@ class ActivityStore{
   {
   this.activityRegistry.set(activity.id,activity);
 
-  this.selectedActivity=activity;
+  this.activity=activity;
   })
-  this.editMode=false;
   this.submmiting=false;
   }catch(error)
   {
@@ -110,35 +108,48 @@ class ActivityStore{
   
 }
 
-    @action openCreateForm=()=>
+    @action clearActivity=()=>
     {
-      this.editMode=true;
-      this.selectedActivity=undefined;
+      this.activity=null;
     }
-    @action cancleSelectedActivity=()=>
-    {
-      this.selectedActivity=undefined;
-    }
-    @action CancleFormOpen=()=>
-    {
-      this.editMode=false;
-    }
-    @action openEditForm=(id:string)=>
-    {
-      this.editMode=true;
-      this.selectedActivity=this.activityRegistry.get(id);
-    }
-
-    @action selectActivity=(id:string)=>{
-        this.selectedActivity=this.activityRegistry.get(id);
-        this.editMode=false;
-    }          
 
     @computed get activitiesByDate() {
       return Array.from( this.activityRegistry.values()).sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
     }
 
+    getActivity=(id:string):IActivity=>{
+      return this.activityRegistry.get(id);
+  }         
+
+  @action loadActivity=async(id:string)=>{
+    
+     var activity=this.getActivity(id);
+     if(activity)
+      {this.activity=activity; }
+      else{
+            try{
+                 this.lodingInitials=true;   
+                 activity= await agent.Activities.details(id);
+
+                  runInAction('loading details action',()=>
+                  {
+                    console.log(activity);
+                      activity.date=activity.date.split('.')[0];
+                      this.activity=activity;
+                      this.lodingInitials=false;  
+                  });
+                     
+                }catch(error){
+                  runInAction('loading details error',()=>{
+                    this.lodingInitials=false;   
+                    console.log(error);
+                  })
+                  
+              }
+          }
+    }
+
 }
 
 
-export default createContext(new ActivityStore);
+export default createContext(new ActivityStore());

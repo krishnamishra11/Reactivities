@@ -1,41 +1,55 @@
-import React, { useState, ChangeEvent, FormEvent, useContext } from 'react'
+import React, { useState, useEffect, FormEvent, useContext } from 'react'
 import { Segment,Form, Button } from 'semantic-ui-react'
 import { IActivity } from '../../model/IActivity'
 import {v4 as uuid} from 'uuid'
 import ActivityStore from '../../app/store/activityStore'
 import {observer} from 'mobx-react-lite'
+import { RouteComponentProps } from 'react-router-dom'
+interface ParmDetails{
+    id:string
+}
 
-const ActivityForm:React.FC = () => {
-   const {selectedActivity, createActivity,CancleFormOpen,editActivity,submmiting}=useContext(ActivityStore)
-    const initialForm=()=>{
+const ActivityForm:React.FC<RouteComponentProps<ParmDetails>> = ({match,history}) => {
+   const { createActivity,
+    editActivity,
+    submmiting,activity:intialiseFormState,
+    loadActivity,
+    clearActivity}=useContext(ActivityStore)
 
-        if(selectedActivity){
-            return selectedActivity;
-        } else{
-            return { 
-                id:'',
-                title:'',
-                description:'',
-                category:'',
-                date:'',
-                city:'',
-                venue:''
 
-            };
-        }
-    }
-    const [activity,setActivity]=useState<IActivity>(initialForm);
+    const [activity,setActivity]=useState<IActivity>( { 
+        id:'',
+        title:'',
+        description:'',
+        category:'',
+        date:'',
+        city:'',
+        venue:''
+
+    });
+
+   useEffect(() => {
+       if(match.params.id && activity.id.length===0)
+       {
+           loadActivity(match.params.id).then (()=>intialiseFormState && setActivity(intialiseFormState));
+       }
+       return (()=>clearActivity())
+       
+   },[loadActivity,clearActivity,match.params.id,intialiseFormState,activity.id.length])
+
+    
+    
 
     const onsubmit=()=>{
-        console.log(activity);
-        if(activity.id.length==0)
+  
+        if(activity.id.length===0)
         {
             let newActivity={...activity,id:uuid()};
-            createActivity(newActivity);
+            createActivity(newActivity).then(()=>history.push(`/activities/${newActivity.id}`));
 
         }
         else{
-                editActivity(activity)
+                editActivity(activity).then(()=>history.push(`/activities/${activity.id}`));
         }
     }
     const onChanageEvent=(event:FormEvent<HTMLInputElement|HTMLTextAreaElement>)=>{
@@ -52,8 +66,8 @@ const ActivityForm:React.FC = () => {
              <Form.Input type="datetime-local" placeholder="Date" name='date' onChange={onChanageEvent} value={activity.date} ></Form.Input>
              <Form.Input placeholder="City" name='city' onChange={onChanageEvent} value={activity.city} ></Form.Input>
              <Form.Input placeholder="Venue" name='venue' onChange={onChanageEvent} value={activity.venue} ></Form.Input>
-             <Button loading={submmiting} content='Submit' type='submit' name='' onChange={onChanageEvent} positive floated='right'  ></Button>
-             <Button onClick={()=>CancleFormOpen()} name='' onChange={onChanageEvent} content='Cancel' type='submit'  floated='right'  ></Button>
+             <Button loading={submmiting} content='Submit' type='submit' name='submit' positive floated='right'  ></Button>
+             <Button onClick={()=>history.push(`/activities/${activity.id}`)} name='Cancel' content='Cancel' type='button'  floated='right'  ></Button>
          </Form>
 
     </Segment>
