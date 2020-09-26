@@ -6,8 +6,7 @@ import ActivityStore from '../../app/store/activityStore';
 import LodingComponent from '../../app/API/LodingComponent';
 
 
-const  ActivityDashboard: React.FC 
-=()=> {
+const  ActivityDashboard: React.FC =()=> {
     const activityStore=useContext(ActivityStore);
 
     useEffect(() => {
