@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.MiddleWare;
 using Application.Activities;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,21 +32,24 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(opt=> {opt.UseSqlite(Configuration.GetConnectionString("Default"));});
-            services.AddControllers();
+            services.AddControllers().AddFluentValidation(cfg=> {cfg.RegisterValidatorsFromAssemblyContaining<Create>();});
             services.AddMediatR(typeof(List.Handler).Assembly);
             services.AddCors(
                 ops=> ops.AddPolicy("CorsPolicy",
                    cops=>cops.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000")
                 )
             );
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ErrorHandelingMiddleware>();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
             }
 
             // app.UseHttpsRedirection();
