@@ -26,7 +26,7 @@ axios.interceptors.response.use(undefined,error=>{
             toast.error('Internal server error, please contact terminal')
         }
     }
-
+ throw error;
 });
 
 const responceBody=(responce:AxiosResponse) => responce.data;

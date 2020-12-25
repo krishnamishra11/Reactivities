@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { observer } from 'mobx-react-lite';
 import React from 'react'
 import { Link } from 'react-router-dom';
@@ -27,10 +28,10 @@ export const ActivityDetailsHeader:React.FC<{activity:IActivity}> = ({activity})
                       <Item.Content>
                         <Header
                           size='huge'
-                          content={'Title'}
+                          content={activity.title}
                           style={{ color: 'white' }}
                         />
-                        <p>{activity.date}</p>
+                        <p>{format(activity.date,'eeee do MMMM')} at {format(activity.date,'h:mm a')}</p>
                         <p>
                           Hosted by <strong>Bob</strong>
                         </p>

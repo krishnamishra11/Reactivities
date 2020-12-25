@@ -4,6 +4,7 @@ import { Item, Button, Segment, Icon } from "semantic-ui-react";
 import { IActivity } from "../../model/IActivity";
 import StoreActivity from "../../app/store/activityStore";
 import { observer } from "mobx-react-lite";
+import { format } from "date-fns";
 
 const ActivityListItem: React.FC<{ val: IActivity }> = ({ val }) => {
   const { deleteActivity, submmiting, target } = useContext(StoreActivity);
@@ -15,7 +16,7 @@ const ActivityListItem: React.FC<{ val: IActivity }> = ({ val }) => {
           <Item.Image size="tiny" circular scr="/public/assetes/user.png"></Item.Image>
           <Item.Content>
             <Item.Header as="a">{val.title}</Item.Header>
-            <Item.Meta>{val.date}</Item.Meta>
+            <Item.Meta>{format(val.date,'eeee do MMMM')}</Item.Meta>
             <Item.Description>Hosted by Krishna</Item.Description>
           </Item.Content>
         </Item>
@@ -23,7 +24,7 @@ const ActivityListItem: React.FC<{ val: IActivity }> = ({ val }) => {
       </Segment>
       <Segment>
         <Icon name="clock" />
-        {val.date}
+        {format(val.date,'h:mm a')}
         <Icon name="marker" />
         {val.venue},{val.city}
       </Segment>

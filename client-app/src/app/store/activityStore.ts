@@ -1,3 +1,5 @@
+import { toast } from 'react-toastify';
+import { history } from './../../index';
 import { IActivity } from "./../../model/IActivity";
 import { createContext, SyntheticEvent } from "react";
 import { observable, action, computed, configure, runInAction } from "mobx";
@@ -20,7 +22,8 @@ class ActivityStore {
 
       runInAction("loging action", () => {
         activities.forEach((activity) => {
-          activity.date = activity.date.split(".")[0];
+          activity.date = new Date(activity.date);
+          this.activity=activity;
           this.activityRegistry.set(activity.id, activity);
         });
         this.lodingInitials = false;
@@ -40,13 +43,15 @@ class ActivityStore {
       runInAction("create action", () => {
         this.activityRegistry.set(activity.id, activity);
         this.activity = activity;
+        this.submmiting = false;
       });
-
-      this.submmiting = false;
+      
+      history.push(`/activities/${activity.id}`);
     } catch (error) {
       runInAction("create actio error", () => {
         this.submmiting = false;
       });
+      toast.error('Proplem subbmiting data');
       console.log(error);
     }
   };
@@ -59,13 +64,15 @@ class ActivityStore {
         this.activityRegistry.set(activity.id, activity);
 
         this.activity = activity;
+        this.submmiting = false;
       });
-      this.submmiting = false;
+      history.push(`/activities/${activity.id}`);
     } catch (error) {
       console.log(error);
       runInAction("create edit error", () => {
         this.submmiting = false;
       });
+      toast.error('Proplem subbmiting data');
     }
   };
 
@@ -104,11 +111,11 @@ class ActivityStore {
 getActivitiesByDate(actarr:IActivity[])
 {
   const sactivities= actarr.sort(
-    (a, b) => Date.parse(a.date) - Date.parse(b.date)
+    (a, b) => a.date!.getTime() - b.date!.getTime()
   );
  
  return  Object.entries(sactivities.reduce((activities,activity)=>{
-    const d=activity.date.split('T')[0];
+    const d=activity.date!.toISOString().split('T')[0];
 
     activities[d]=activities[d]? [...activities[d],activity]:[activity];
     return activities;
@@ -124,6 +131,7 @@ getActivitiesByDate(actarr:IActivity[])
     var activity = this.getActivity(id);
     if (activity) {
       this.activity = activity;
+      return activity;
     } else {
       try {
         this.lodingInitials = true;
@@ -131,10 +139,12 @@ getActivitiesByDate(actarr:IActivity[])
 
         runInAction("loading details action", () => {
 
-          activity.date = activity.date.split(".")[0];
+          activity.date = new Date(activity.date);
           this.activity = activity;
+          this.activityRegistry.set(activity.id, activity);
           this.lodingInitials = false;
         });
+        return activity;
       } catch (error) {
         runInAction("loading details error", () => {
           this.lodingInitials = false;
