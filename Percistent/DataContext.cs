@@ -1,9 +1,10 @@
 using Domain;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Percistent
 {
-    public class DataContext:DbContext
+    public class DataContext:IdentityDbContext<AppUser>
     {
         public DataContext(DbContextOptions dbContextOptions ):base(dbContextOptions)
         {
@@ -14,6 +15,7 @@ namespace Percistent
 
         protected override void OnModelCreating( ModelBuilder modelBuilder   )
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Value>().HasData(
                  new Value{ Id=1,Name="Value 101" });
             modelBuilder.Entity<Value>().HasData(

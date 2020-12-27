@@ -1,14 +1,37 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace Percistent
 {
     public class Seed
     {
-        public static void SeedData(DataContext dataContext)
+        public static async Task SeedData(DataContext dataContext,UserManager<AppUser> userManager)
         {
+
+            if(!userManager.Users.Any())
+            {
+                List<AppUser> users = new List<AppUser>{
+                    new AppUser{ DisplayName="Amitab",
+                                  UserName ="Amitab",
+                                  Email="Amitab@test.com"},
+                    new AppUser{ DisplayName="Dharmendra",
+                                  UserName ="Dharmendra",
+                                  Email="Dharmendra@test.com"},
+                    new AppUser{ DisplayName="Jitu",
+                                  UserName ="Jitu",
+                                  Email="Jitu@test.com"}          
+                };
+
+                foreach(var user in users)
+                {
+                   await userManager.CreateAsync(user,"Pass@123");
+                }
+
+            }
             if(!dataContext.Activities.Any())
             {
                 var activity=new  List<Activity> {

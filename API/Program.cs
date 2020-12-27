@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Percistent;
+using Microsoft.AspNetCore.Identity;
+using Domain;
 
 namespace API
 {
@@ -21,8 +23,9 @@ namespace API
             {
                 var services=scope.ServiceProvider;
                 var context=services.GetRequiredService<DataContext>();
+                var userManager= services.GetRequiredService<UserManager<AppUser>>();
                 context.Database.Migrate();      
-                Seed.SeedData(context);
+                Seed.SeedData(context,userManager).Wait();
             }
             host.Run();
 
