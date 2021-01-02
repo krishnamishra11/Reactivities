@@ -2,7 +2,18 @@ import { history } from './../../index';
 import axios, { AxiosResponse } from 'axios';
 import {IActivity} from '../../model/IActivity';
 import { toast } from 'react-toastify';
+import { IUser, IUserFormValues } from '../../model/User';
 axios.defaults.baseURL='http://localhost:5000/';
+
+axios.interceptors.request.use((config)=>{
+    const token=window.localStorage.getItem('jwt');
+    console.log('interceptors',token);
+    if(token) config.headers.Authorization=`Bearer ${token}`;
+    return config;
+
+},error=>{
+    return Promise.reject(error);
+})
 
 axios.interceptors.response.use(undefined,error=>{
 
@@ -26,7 +37,7 @@ axios.interceptors.response.use(undefined,error=>{
             toast.error('Internal server error, please contact terminal')
         }
     }
- throw error;
+ throw error.response;
 });
 
 const responceBody=(responce:AxiosResponse) => responce.data;
@@ -47,6 +58,14 @@ const Activities={
     delete:(id:string)=>requests.del(`/Activities/${id}`)
 }
 
+const User={
+    current:():Promise<IUser>=>requests.get('/user'),
+    login:(user:IUserFormValues):Promise<IUser>=> requests.post(`/user/login`,user),
+    register:(user:IUserFormValues):Promise<IUser>=> requests.post(`/user/register`,user)
+
+
+}
 export default{
-    Activities
+    Activities,
+    User
 }

@@ -1,18 +1,20 @@
 import React, { Fragment, useContext } from "react";
 import { Item, Label } from "semantic-ui-react";
-import StoreActivity from "../../app/store/activityStore";
 import { observer } from "mobx-react-lite";
 import ActivityListItem from "./ActivityListItem";
+import { RootStoreContext } from "../../app/store/rootStore";
+import { format } from "date-fns";
+
 
 const ActivityList: React.FC = () => {
-  const { activitiesByDate } = useContext(StoreActivity);
+  const { activitiesByDate } = useContext(RootStoreContext).activityStore;
 
   return (
        <Fragment> 
         {activitiesByDate.map(([group, activities]) => (
           <Fragment key={group}>
             <Label size="large" color="blue" key={group}>
-              {group}
+              {format(group,'eeee do MMMM')}
             </Label>
      
               <Item.Group divided>            

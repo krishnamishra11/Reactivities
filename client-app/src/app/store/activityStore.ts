@@ -1,13 +1,21 @@
+import { RootStore } from './rootStore';
 import { toast } from 'react-toastify';
 import { history } from './../../index';
 import { IActivity } from "./../../model/IActivity";
-import { createContext, SyntheticEvent } from "react";
-import { observable, action, computed, configure, runInAction } from "mobx";
+import {  SyntheticEvent } from "react";
+import { observable, action, computed,  runInAction } from "mobx";
 import agent from "../API/agent";
 
-configure({ enforceActions: "always" });
 
-class ActivityStore {
+
+export default class ActivityStore {
+
+  vrootStore:RootStore;
+  constructor(rootStore:RootStore)
+  {
+    this.vrootStore=rootStore;
+  }
+
   @observable activityRegistry = new Map();
   @observable activity: IActivity | null = null;
   @observable lodingInitials = false;
@@ -155,4 +163,4 @@ getActivitiesByDate(actarr:IActivity[])
   };
 }
 
-export default createContext(new ActivityStore());
+
