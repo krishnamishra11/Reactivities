@@ -6,8 +6,8 @@ import LoadingComponent from '../../app/API/LodingComponent'
 import ActivityDetailsHeader from './ActivityDetailsHeader'
 import { ActivityDetailsInfo } from './ActivityDetailsInfo'
 import { ActivityDetailsChat } from './ActivityDetailsChat'
-import { ActitivityDetailsSidebar } from './ActitivityDetailsSidebar'
 import { RootStoreContext } from '../../app/store/rootStore'
+import ActitivityDetailsSidebar from './ActitivityDetailsSidebar'
 
 interface ParamDetails{
   id:string;
@@ -30,12 +30,12 @@ if(!activity)
     return (
        <Grid>
          <Grid.Column width={10}>
-           <ActivityDetailsHeader activity={activity!}/>
-           <ActivityDetailsInfo activity={activity!}/>
+           <ActivityDetailsHeader activity={activity}/>
+           <ActivityDetailsInfo activity={activity}/>
            <ActivityDetailsChat/>
          </Grid.Column>
          <Grid.Column width={6}>
-          <ActitivityDetailsSidebar/>
+          <ActitivityDetailsSidebar attendees={activity.attendees}/>
          </Grid.Column>
        </Grid>
     )

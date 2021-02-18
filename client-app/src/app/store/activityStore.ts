@@ -1,3 +1,4 @@
+import { createAttendee } from './../Common/utilities/utililits';
 import { RootStore } from './rootStore';
 import { toast } from 'react-toastify';
 import { history } from './../../index';
@@ -5,6 +6,7 @@ import { IActivity } from "./../../model/IActivity";
 import {  SyntheticEvent } from "react";
 import { observable, action, computed,  runInAction } from "mobx";
 import agent from "../API/agent";
+import { UpdateUserProperty } from '../Common/utilities/utililits';
 
 
 
@@ -21,6 +23,7 @@ export default class ActivityStore {
   @observable lodingInitials = false;
   @observable submmiting = false;
   @observable target = "";
+  @observable loading=false;
 
   @action loadActivities = async () => {
     this.lodingInitials = true;
@@ -31,6 +34,7 @@ export default class ActivityStore {
       runInAction("loging action", () => {
         activities.forEach((activity) => {
           activity.date = new Date(activity.date);
+          UpdateUserProperty(activity,this.vrootStore.userStore.user!)
           this.activity=activity;
           this.activityRegistry.set(activity.id, activity);
         });
@@ -48,6 +52,12 @@ export default class ActivityStore {
     this.submmiting = true;
     try {
       await agent.Activities.create(activity);
+      const attendee=createAttendee(this.vrootStore.userStore.user!)
+      attendee.isHost=true;
+      let attendees=[];
+      attendees.push(attendee);
+      activity.attendees=attendees;
+      activity.isHost=true;
       runInAction("create action", () => {
         this.activityRegistry.set(activity.id, activity);
         this.activity = activity;
@@ -143,11 +153,13 @@ getActivitiesByDate(actarr:IActivity[])
     } else {
       try {
         this.lodingInitials = true;
+        
         activity = await agent.Activities.details(id);
 
         runInAction("loading details action", () => {
 
-          activity.date = new Date(activity.date);
+          UpdateUserProperty(activity,this.vrootStore.userStore.user!)
+        
           this.activity = activity;
           this.activityRegistry.set(activity.id, activity);
           this.lodingInitials = false;
@@ -161,6 +173,56 @@ getActivitiesByDate(actarr:IActivity[])
       }
     }
   };
-}
+
+  @action attendActivity=async()=>{
+    const attendee=createAttendee(this.vrootStore.userStore.user!)
+    try{
+      await agent.Activities.attend(this.activity!.id);
+      runInAction(()=>
+      {
+        if(this.activity){
+          this.activity.attendees.push(attendee);
+          this.activity.isGoing=true;
+          this.activityRegistry.set(this.activity.id,this.activity);
+        }
+        this.loading=false;
+      }
+      )
+    }catch(error)
+    {
+      runInAction(()=>
+      {
+        this.loading=false;
+        
+      });
+      toast.error('Problem sining up to activity');
+    }
+  }
+
+  @action cancelActivity=async()=>{
+    try{
+      await agent.Activities.unattend(this.activity!.id);
+      runInAction(()=>
+      {
+        if(this.activity){
+          this.activity.attendees=this.activity.attendees.filter(q=>q.username!==this.vrootStore.userStore.user?.username)
+          this.activity.isGoing=false;
+          this.activityRegistry.set(this.activity.id,this.activity);
+        }}
+      );
+    }catch(error)
+    {
+        runInAction(()=>
+        {
+          this.loading=false;
+        });
+        toast.error('Problem canceling activity');
+    }
+    }
+  }
+
+
+
+
 
 
